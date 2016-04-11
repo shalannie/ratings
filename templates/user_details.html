@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <h1>User Details</h1>
+    <h2>{{ user.email }}</h2>
+      <ul>
+          <li><b>Age</b>: {{ user.age }}</li><br>
+          <li><b>Zipcode</b>: {{ user.zipcode }}</li><br>
+          <li><b>List of Movies and Scores</b>:
+            <ul>
+             <!--  the list of movies the user has rated and the scores for each rating -->
+              {% if user.ratings %}
+                {% for rating in user.ratings %}
+                  <li><i>{{ rating.movie.title }}</i>: <b>{{ rating.score }}</b></li> 
+                {% endfor %}
+              {% else %}
+                <p>No movies rated.<p>
+              {% endif %}
+            </ul>
+          </li>
+      </ul>
+
+{% endblock %}
