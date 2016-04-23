@@ -41,7 +41,7 @@ def show_user_details(user_id):
     user = User.query.get(user_id)
 
     return render_template("user_details.html",
-                            user=user)
+                           user=user)
 
 
 @app.route("/movies")
@@ -60,7 +60,7 @@ def show_movie_details(movie_id):
     movie = Movie.query.get(movie_id)
 
     return render_template("movie_details.html",
-                            movie=movie)
+                           movie=movie)
 
 
 @app.route("/movies/<int:movie_id>/show-rating-form")
@@ -69,12 +69,12 @@ def show_rating_form(movie_id):
 
     # If user is logged in, render rating_form.html.
     # Otherwise, redirect to login page.
-    
-    movie = Movie.query.get(movie_id)    
+
+    movie = Movie.query.get(movie_id)
 
     if session:
         return render_template("rating_form.html",
-                                movie=movie)
+                               movie=movie)
     else:
         flash("Please login to add or update a movie rating.")
         return redirect("/login")
@@ -87,7 +87,7 @@ def process_rating(movie_id):
     user_id = session.get("user_id")
     score = request.form.get("rating")
 
-    rating = Rating.query.filter_by(user_id=user_id, movie_id=movie_id)
+    rating = Rating.query.filter_by(user_id=user_id, movie_id=movie_id).first()
 
     if rating:
         # Update rating
@@ -123,7 +123,7 @@ def process_user_login():
 
     email = request.form.get("email")
     password = request.form.get("password")
-    
+
     # Grab the user object that matches the email and password values.
     user = User.query.filter_by(email=email, password=password).first()
 
@@ -139,14 +139,14 @@ def process_user_login():
         flash("Sorry, you're not a registered user. Please sign up.")
         return redirect("/sign-up-form")
 
-        
+
 @app.route("/sign-up-form")
 def show_sign_up_form():
     """Show sign up form for new users."""
 
     return render_template("sign_up_form.html")
 
-    
+
 @app.route("/sign-up", methods=["POST"])
 def sign_up_new_user():
     """Add a new user to the database and session."""
@@ -155,16 +155,16 @@ def sign_up_new_user():
     password = request.form.get("password")
     age = int(request.form.get("age"))
     zipcode = request.form.get("zipcode")
-    
-    # Creating new user in our database based on email, password, age, and zipcode. 
+
+    # Creating new user in our database based on email, password, age, and zipcode.
     new_user = User(email=email, password=password, age=age, zipcode=zipcode)
     db.session.add(new_user)
     db.session.commit()
 
     new_user_id = new_user.user_id
-    # Add the new user to the session. 
+    # Add the new user to the session.
     session["user_id"] = new_user_id
-    flash("Thank you. Your account has been created.")  
+    flash("Thank you. Your account has been created.")
 
     new_user_details = "/users/%d" % (new_user_id)
     return redirect(new_user_details)
