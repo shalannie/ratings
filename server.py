@@ -87,16 +87,12 @@ def process_rating(movie_id):
     user_id = session.get("user_id")
     score = int(request.form.get("rating"))
 
-
     rating = Rating.query.filter_by(user_id=user_id, movie_id=movie_id).first()
 
     if rating:
         # Update rating
         rating.score = score
-
-
         flash("Thank you. Your rating has been updated for this movie.")
-
 
     else:
         # Add rating
@@ -179,7 +175,6 @@ def log_out_user():
     del session["user_id"]
     flash("Logged out")
     return redirect("/")
-
 
 
 if __name__ == "__main__":
