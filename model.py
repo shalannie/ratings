@@ -1,12 +1,19 @@
 """Models and database functions for Ratings project."""
 
+from correlation import pearson
 from flask_sqlalchemy import SQLAlchemy
+
 
 # This is the connection to the PostgreSQL database; we're getting this through
 # the Flask-SQLAlchemy helper library. On this, we can find the `session`
 # object, where we do most of our interactions (like committing, etc.)
 
 db = SQLAlchemy()
+
+# Behavior of the Eye:
+# When a user views a movie they haven’t rated, the Eye predicts how that user will rate that movie.
+# Once a user has either rated the movie or received a prediction, the Eye will find its own rating score for that movie, predicting the number if it has to.
+# The Eye will take the difference of the two ratings, and criticize the user for their tastes.
 
 
 ##############################################################################
@@ -27,6 +34,28 @@ class User(db.Model):
         """Provide helpful representation when printed."""
 
         return "<User user_id=%d email=%s>" % (self.user_id, self.email)
+
+    def similarity(self, other):
+        """Return the pearson rating for a user compared to another user"""
+
+        user_ratings = {}
+        paired_ratings = []
+
+        for rating in self.ratings:
+            user_ratings[rating.movie_id] = rating
+
+        for r in other.ratings:
+            u_r = user_ratings.get(r.movie_id)
+
+            if u_r is not None:
+                paired_ratings.append((u_r.score, r.score))
+
+        if paired_ratings:
+            return pearson(paired_ratings)
+        else:
+            return 0.0
+
+
 
 
 # Put your Movie and Rating model classes here.

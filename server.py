@@ -85,7 +85,8 @@ def process_rating(movie_id):
     """Update or add new user rating."""
 
     user_id = session.get("user_id")
-    score = request.form.get("rating")
+    score = int(request.form.get("rating"))
+
 
     rating = Rating.query.filter_by(user_id=user_id, movie_id=movie_id).first()
 
@@ -93,8 +94,9 @@ def process_rating(movie_id):
         # Update rating
         rating.score = score
 
+
         flash("Thank you. Your rating has been updated for this movie.")
-        return redirect("/movies/%s" % movie_id)
+
 
     else:
         # Add rating
